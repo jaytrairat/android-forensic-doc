@@ -109,11 +109,13 @@
             style="@style/Label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+
             android:text="ลงวันที่" />
 
         <EditText
             android:id="@+id/txtOriginalDate"
             style="@style/EditText"
+            android:hint="yyyy/mm/dd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="date" />

@@ -16,6 +16,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.xmlbeans.XmlOptions
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -26,6 +27,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val txtOriginalDate = findViewById<TextView>(R.id.txtOriginalDate)
+        val currentDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(Date())
+        txtOriginalDate.text = currentDate
         val btnGenerateIndexPage = findViewById<Button>(R.id.btnGenerateIndexPage)
         btnGenerateIndexPage.setOnClickListener {
             createDocxFromTemplate()
