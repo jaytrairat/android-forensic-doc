@@ -1,6 +1,7 @@
 package com.jaytrairat.forensicdoc
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
@@ -24,35 +25,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION = 123
-        if (ContextCompat.checkSelfPermission(
-                this,
-                WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(WRITE_EXTERNAL_STORAGE),
-                REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION
-            )
-        }
 
         val btnGenerateIndexPage = findViewById<Button>(R.id.btnGenerateIndexPage)
         btnGenerateIndexPage.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(WRITE_EXTERNAL_STORAGE),
-                    REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION
-                )
-            } else {
-                // Permission has already been granted, save the file
-                createDocxFromTemplate()
-            }
+            createDocxFromTemplate()
         }
     }
 
@@ -73,13 +49,13 @@ class MainActivity : AppCompatActivity() {
             val numberOfPages = txtNumberOfPages.text.toString()
 
             // Load the docx template
-            val templateInputStream = resources.openRawResource(R.raw.indexpage)
+            val templateInputStream = resources.openRawResource(R.raw.index_case_template)
             val document = XWPFDocument(templateInputStream)
 
             // Replace placeholders with data from the TextView
             val data = mapOf(
                 "document_to" to documentTo,
-                "original_form" to originalFrom,
+                "original_from" to originalFrom,
                 "original_number" to originalNumber,
                 "original_date" to originalDate,
                 "original_name" to originalName,
@@ -89,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                 for (run in paragraph.runs) {
                     var text = run.text()
                     for ((key, value) in data) {
-                        text = text.replace("{$key}", value)
+                        text = text.replace("$key", value)
                     }
                     run.setText(text, 0)
                 }
@@ -116,6 +92,7 @@ class MainActivity : AppCompatActivity() {
             // Close the template document
             document.close()
             Toast.makeText(this, "Document created", Toast.LENGTH_LONG).show()
+
         } catch (error: Exception) {
             Log.e("ERROR", error.toString())
             Toast.makeText(this, "Failed to exports", Toast.LENGTH_LONG).show()

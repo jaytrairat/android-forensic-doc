@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="ใบปะหน้า"
+            android:textColor="#000"
             android:textAlignment="center" />
     </LinearLayout>
 
@@ -52,6 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="เรื่องเดิม"
+            android:textColor="#000"
             android:textAlignment="center" />
     </LinearLayout>
 
@@ -148,6 +150,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#000"
             android:text="รายละเอียดการตอบกลับ"
             android:textAlignment="center" />
     </LinearLayout>
