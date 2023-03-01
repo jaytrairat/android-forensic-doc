@@ -69,7 +69,7 @@
             android:text="ตามหนังสือ" />
 
         <EditText
-            android:id="@+id/txtOriginalNumber"
+            android:id="@+id/txtOriginalFrom"
             style="@style/EditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -87,10 +87,10 @@
             style="@style/Label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="จาก" />
+            android:text="ที่" />
 
         <EditText
-            android:id="@+id/txtOriginalFrom"
+            android:id="@+id/txtOriginalNumber"
             style="@style/EditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -111,11 +111,11 @@
 
         <EditText
             android:id="@+id/txtOriginalDate"
-            style="@style/EditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="กรุณากรอกข้อมูล"
-            android:inputType="textPersonName" />
+            android:layout_weight="1.5"
+            android:inputType="date" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -137,4 +137,46 @@
             android:hint="กรุณากรอกข้อมูล"
             android:inputType="textPersonName" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#dddddd"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="รายละเอียดการตอบกลับ"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/Label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="จำนวนหน้า" />
+
+        <EditText
+            android:id="@+id/editTextNumber"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:inputType="number"
+            android:text="0" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnGenerateIndexPage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="สร้างใบปะหน้า" />
+
 </LinearLayout>
