@@ -4,10 +4,12 @@
     <style name="Label">
         <item name="android:textSize">16dp</item>
         <item name="android:layout_weight">0.5</item>
+        <item name="android:layout_margin">3dp</item>
     </style>
 
     <style name="EditText">
         <item name="android:textSize">12dp</item>
         <item name="android:layout_weight">1.5</item>
+        <item name="android:layout_margin">3dp</item>
     </style>
 </resources>

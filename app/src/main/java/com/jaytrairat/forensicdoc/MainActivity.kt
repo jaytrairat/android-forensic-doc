@@ -3,6 +3,9 @@ package com.jaytrairat.forensicdoc
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -36,6 +39,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getErrorBorderDrawable(color: Int): Drawable {
+        val strokeWidth = 3 // the width of the border
+        val strokeColor = color // the color of the border
+        return GradientDrawable().apply {
+            setStroke(strokeWidth, strokeColor)
+        }
+    }
+
     fun createDocxFromTemplate() {
         try {
             val txtDocumentTo = findViewById<TextView>(R.id.txtDocumentTo)
@@ -52,50 +63,94 @@ class MainActivity : AppCompatActivity() {
             val originalName = txtOriginalName.text.toString()
             val numberOfPages = txtNumberOfPages.text.toString()
 
-            // Load the docx template
-            val templateInputStream = resources.openRawResource(R.raw.index_case_template)
-            val document = XWPFDocument(templateInputStream)
+            var isError = false // to keep track of whether there is an error
+            val errorBorderColor = Color.RED
 
-            // Replace placeholders with data from the TextView
-            val data = mapOf(
-                "document_to" to documentTo,
-                "original_from" to originalFrom,
-                "original_number" to originalNumber,
-                "original_date" to originalDate,
-                "original_name" to originalName,
-                "number_of_result" to numberOfPages,
-            )
-            for (paragraph in document.paragraphs) {
-                for (run in paragraph.runs) {
-                    var text = run.text()
-                    for ((key, value) in data) {
-                        text = text.replace("$key", value)
-                    }
-                    run.setText(text, 0)
-                }
+            if (documentTo.isNullOrEmpty()) {
+                txtDocumentTo.background =
+                    getErrorBorderDrawable(errorBorderColor) // set the border to red
+                isError = true // set isError to true to indicate that there is an error
             }
 
-            // Save the filled template as a new docx file in the Downloads folder
-            val now = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
-            var index = 0
-            var outputFile: File
-            do {
-                val filename = "${formatter.format(now)}_${index}_page.docx"
-                outputFile = File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    filename
+            if (originalFrom.isNullOrEmpty()) {
+                txtOriginalFrom.background =
+                    getErrorBorderDrawable(errorBorderColor) // set the border to red
+                isError = true // set isError to true to indicate that there is an error
+            }
+
+            if (originalNumber.isNullOrEmpty()) {
+                txtOriginalNumber.background =
+                    getErrorBorderDrawable(errorBorderColor) // set the border to red
+                isError = true // set isError to true to indicate that there is an error
+            }
+
+            if (originalDate.isNullOrEmpty()) {
+                txtOriginalDate.background =
+                    getErrorBorderDrawable(errorBorderColor) // set the border to red
+                isError = true // set isError to true to indicate that there is an error
+            }
+
+            if (originalName.isNullOrEmpty()) {
+                txtOriginalName.background =
+                    getErrorBorderDrawable(errorBorderColor) // set the border to red
+                isError = true // set isError to true to indicate that there is an error
+            }
+
+            if (numberOfPages.isNullOrEmpty()) {
+                txtNumberOfPages.background =
+                    getErrorBorderDrawable(errorBorderColor) // set the border to red
+                isError = true // set isError to true to indicate that there is an error
+            }
+            if (!isError) {
+
+                // Load the docx template
+                val templateInputStream = resources.openRawResource(R.raw.index_case_template)
+                val document = XWPFDocument(templateInputStream)
+
+                // Replace placeholders with data from the TextView
+                val data = mapOf(
+                    "document_to" to documentTo,
+                    "original_from" to originalFrom,
+                    "original_number" to originalNumber,
+                    "original_date" to originalDate,
+                    "original_name" to originalName,
+                    "number_of_result" to numberOfPages,
                 )
-                index++
-            } while (outputFile.exists())
+                for (paragraph in document.paragraphs) {
+                    for (run in paragraph.runs) {
+                        var text = run.text()
+                        for ((key, value) in data) {
+                            text = text.replace("$key", value)
+                        }
+                        run.setText(text, 0)
+                    }
+                }
 
-            val fos = FileOutputStream(outputFile)
-            document.write(fos)
-            fos.close()
+                // Save the filled template as a new docx file in the Downloads folder
+                val now = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
+                var index = 0
+                var outputFile: File
+                do {
+                    val filename = "${formatter.format(now)}_${index}_page.docx"
+                    outputFile = File(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                        filename
+                    )
+                    index++
+                } while (outputFile.exists())
 
-            // Close the template document
-            document.close()
-            Toast.makeText(this, "Document created", Toast.LENGTH_LONG).show()
+                val fos = FileOutputStream(outputFile)
+                document.write(fos)
+                fos.close()
+
+                // Close the template document
+                document.close()
+                Toast.makeText(this, "Document created", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Text cannot be null", Toast.LENGTH_LONG).show()
+            }
+
 
         } catch (error: Exception) {
             Log.e("ERROR", error.toString())
