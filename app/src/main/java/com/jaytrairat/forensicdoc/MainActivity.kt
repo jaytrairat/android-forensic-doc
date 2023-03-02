@@ -20,7 +20,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -181,6 +180,7 @@ class MainActivity : AppCompatActivity() {
                 val outputFile = File(downloadFolder, exportFilename)
 
                 XWPFDocument(templateInputStream).use { doc ->
+
                     for (para in doc.paragraphs) {
                         val paraText = para.text
                         if (replaceParams.keys.any { it in paraText }) {
