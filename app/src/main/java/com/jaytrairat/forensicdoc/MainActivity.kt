@@ -127,6 +127,11 @@ class MainActivity : AppCompatActivity() {
 
             var isError = false // to keep track of whether there is an error
             val errorBorderColor = Color.RED
+            txtDocumentTo.background = null
+            txtOriginalFrom.background = null
+            txtOriginalNumber.background = null
+            txtOriginalName.background = null
+            txtNumberOfPages.background = null
 
             if (documentTo.isNullOrEmpty()) {
                 txtDocumentTo.background =
