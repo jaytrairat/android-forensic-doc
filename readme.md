@@ -14,4 +14,4 @@ Prerequisites
 
 | Name        | Version | Download                                                                            |
 |-------------|---------|-------------------------------------------------------------------------------------|
-| ForensicDoc | v1.0.0  | [Download](https://github.com/jaytrairat/android-forensic-doc/blob/ForensicDoc.apk) |
+| ForensicDoc | v1.0.0  | [Download](https://github.com/jaytrairat/android-forensic-doc/blob/master/ForensicDoc.apk) |
