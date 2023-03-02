@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="15dp"
-    >
+    android:padding="15dp">
 
 
     <LinearLayout
@@ -18,8 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="ใบปะหน้า"
-            android:textColor="#000"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="#000" />
     </LinearLayout>
 
     <LinearLayout
@@ -54,8 +53,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="เรื่องเดิม"
-            android:textColor="#000"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="#000" />
     </LinearLayout>
 
 
@@ -152,9 +151,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#000"
             android:text="รายละเอียดการตอบกลับ"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="#000" />
     </LinearLayout>
 
     <LinearLayout

@@ -97,12 +97,16 @@ class MainActivity : AppCompatActivity() {
             val documentTo = txtDocumentTo.text.toString()
             val originalFrom = txtOriginalFrom.text.toString()
             val originalNumber = txtOriginalNumber.text.toString()
-            val originalDate = String.format(
-                "%04d/%02d/%02d",
-                txtOriginalDate.getYear(),
-                txtOriginalDate.getMonth() + 1,
-                txtOriginalDate.getDayOfMonth()
-            );
+
+
+
+            val originalYear =txtOriginalDate.getYear()
+            val originalMonth =txtOriginalDate.getMonth() + 1
+            val originalDate = txtOriginalDate.getDayOfMonth()
+
+            val calendar = Calendar.getInstance()
+            calendar.set(originalYear, originalMonth, originalDate)
+
             val originalName = txtOriginalName.text.toString()
             val numberOfPages = txtNumberOfPages.text.toString()
 
@@ -112,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 putString("txtDocumentTo", documentTo)
                 putString("txtOriginalFrom", originalFrom)
                 putString("txtOriginalNumber", originalNumber)
-                putString("txtOriginalDate", originalDate)
+                putString("txtOriginalDate", calendar.toString())
                 putString("txtOriginalName", originalName)
                 putString("txtNumberOfPages", numberOfPages)
                 apply()
@@ -139,12 +143,6 @@ class MainActivity : AppCompatActivity() {
                 isError = true // set isError to true to indicate that there is an error
             }
 
-            if (originalDate.isNullOrEmpty()) {
-                txtOriginalDate.background =
-                    getErrorBorderDrawable(errorBorderColor) // set the border to red
-                isError = true // set isError to true to indicate that there is an error
-            }
-
             if (originalName.isNullOrEmpty()) {
                 txtOriginalName.background =
                     getErrorBorderDrawable(errorBorderColor) // set the border to red
@@ -163,9 +161,8 @@ class MainActivity : AppCompatActivity() {
 
 
                 val currentThaiLongDate = longThaiDateFormatter.format(Date())
-
                 val currentThaiShortDate = shortThaiDateFormatter.format(Date())
-//                val thaiLongDate = longThaiDateFullFormatter.format(originalDate)
+                val thaiLongDate = longThaiDateFullFormatter.format(calendar.time)
 
                 Toast.makeText(this, originalDate.toString(), Toast.LENGTH_LONG).show()
                 // Load the docx template
@@ -174,25 +171,26 @@ class MainActivity : AppCompatActivity() {
 
                 // Replace placeholders with data from the TextView
                 val data = mapOf(
-                    "document_to" to documentTo,
-                    "document_from" to originalFrom,
-                    "document_number" to originalNumber,
-//                    "original_date" to thaiLongDate,
-                    "document_name" to originalName,
-                    "number_of_result" to numberOfPages,
-                    "date_long" to currentThaiLongDate,
-                    "date_short" to currentThaiShortDate
+                    "documentTo" to documentTo,
+                    "originalFrom" to originalFrom,
+                    "originalNumber" to originalNumber,
+                    "originalDate" to thaiLongDate,
+                    "originalName" to originalName,
+                    "numberOfPages" to numberOfPages,
+                    "dateLong" to currentThaiLongDate,
+                    "dateShort" to currentThaiShortDate
                 )
                 Log.d("DATA", data.toString())
                 for (paragraph in document.paragraphs) {
                     for (run in paragraph.runs) {
                         var text = run.text()
                         for ((key, value) in data) {
-                            text = text.replace("$key", value)
+                            text = text.replace("{{${key}}}", value)
                         }
                         run.setText(text, 0)
                     }
                 }
+
 
                 // Save the filled template as a new docx file in the Downloads folder
                 val now = LocalDateTime.now()
