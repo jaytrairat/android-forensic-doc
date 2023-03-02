@@ -1,7 +1,8 @@
 package com.jaytrairat.forensicdoc
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.content.Intent
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -10,13 +11,13 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.apache.poi.xwpf.usermodel.XWPFDocument
-import org.apache.xmlbeans.XmlOptions
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -26,17 +27,34 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val txtOriginalDate = findViewById<TextView>(R.id.txtOriginalDate)
+        var txtDocumentTo: TextView = findViewById(R.id.txtDocumentTo)
+        var txtOriginalFrom: TextView = findViewById(R.id.txtOriginalFrom)
+        var txtOriginalNumber: TextView = findViewById(R.id.txtOriginalNumber)
+        var txtOriginalDate: TextView = findViewById(R.id.txtOriginalDate)
+        var txtOriginalName: TextView = findViewById(R.id.txtOriginalName)
+        var txtNumberOfPages: TextView = findViewById(R.id.txtNumberOfPages)
+
+        checkPermission()
         val currentDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(Date())
-        txtOriginalDate.text = currentDate
+
         val btnGenerateIndexPage = findViewById<Button>(R.id.btnGenerateIndexPage)
         btnGenerateIndexPage.setOnClickListener {
             createDocxFromTemplate()
         }
+
+        val sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)
+        txtDocumentTo.text = sharedPref.getString("txtDocumentTo", "")
+        txtOriginalFrom.text = sharedPref.getString("txtOriginalFrom", "")
+        txtOriginalNumber.text = sharedPref.getString("txtOriginalNumber", "")
+        txtOriginalDate.text = sharedPref.getString("txtOriginalDate", currentDate)
+        txtOriginalName.text = sharedPref.getString("txtOriginalName", "")
+        txtNumberOfPages.text = sharedPref.getString("txtNumberOfPages", "")
     }
 
     private fun getErrorBorderDrawable(color: Int): Drawable {
@@ -47,14 +65,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkPermission() {
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                this,
+                WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permissions have been granted, do your work here
+        } else {
+            // Permissions have not been granted, request them
+            val REQUEST_CODE = 30
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE),
+                REQUEST_CODE
+            )
+        }
+    }
+
     fun createDocxFromTemplate() {
         try {
-            val txtDocumentTo = findViewById<TextView>(R.id.txtDocumentTo)
-            val txtOriginalFrom = findViewById<TextView>(R.id.txtOriginalFrom)
-            val txtOriginalNumber = findViewById<TextView>(R.id.txtOriginalNumber)
-            val txtOriginalDate = findViewById<TextView>(R.id.txtOriginalDate)
-            val txtOriginalName = findViewById<TextView>(R.id.txtOriginalName)
-            val txtNumberOfPages = findViewById<TextView>(R.id.txtNumberOfPages)
+            var txtDocumentTo: TextView = findViewById(R.id.txtDocumentTo)
+            var txtOriginalFrom: TextView = findViewById(R.id.txtOriginalFrom)
+            var txtOriginalNumber: TextView = findViewById(R.id.txtOriginalNumber)
+            var txtOriginalDate: TextView = findViewById(R.id.txtOriginalDate)
+            var txtOriginalName: TextView = findViewById(R.id.txtOriginalName)
+            var txtNumberOfPages: TextView = findViewById(R.id.txtNumberOfPages)
 
             val documentTo = txtDocumentTo.text.toString()
             val originalFrom = txtOriginalFrom.text.toString()
@@ -62,6 +103,18 @@ class MainActivity : AppCompatActivity() {
             val originalDate = txtOriginalDate.text.toString()
             val originalName = txtOriginalName.text.toString()
             val numberOfPages = txtNumberOfPages.text.toString()
+
+
+            val sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                putString("txtDocumentTo", documentTo)
+                putString("txtOriginalFrom", documentTo)
+                putString("txtOriginalNumber", documentTo)
+                putString("txtOriginalDate", documentTo)
+                putString("txtOriginalName", documentTo)
+                putString("txtNumberOfPages", documentTo)
+                apply()
+            }
 
             var isError = false // to keep track of whether there is an error
             val errorBorderColor = Color.RED
@@ -146,6 +199,8 @@ class MainActivity : AppCompatActivity() {
 
                 // Close the template document
                 document.close()
+
+
                 Toast.makeText(this, "Document created", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(this, "Text cannot be null", Toast.LENGTH_LONG).show()
