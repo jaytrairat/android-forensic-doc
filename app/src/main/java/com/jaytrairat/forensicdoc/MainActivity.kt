@@ -2,7 +2,9 @@ package com.jaytrairat.forensicdoc
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.DownloadManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -43,6 +45,12 @@ class MainActivity : AppCompatActivity() {
         val btnGenerateIndexPage = findViewById<Button>(R.id.btnGenerateIndexPage)
         btnGenerateIndexPage.setOnClickListener {
             createDocxFromTemplate()
+        }
+
+
+        val btnOpenDownload = findViewById<Button>(R.id.btnOpenDownload)
+        btnOpenDownload.setOnClickListener {
+            startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
         }
 
         val sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)
