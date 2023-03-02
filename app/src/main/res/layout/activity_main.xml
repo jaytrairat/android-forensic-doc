@@ -177,10 +177,27 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnGenerateIndexPage"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="สร้างใบปะหน้า" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnGenerateIndexPage"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_margin="15dp"
+            android:layout_height="wrap_content"
+            android:text="สร้างใบปะหน้า" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_margin="15dp"
+            android:layout_height="wrap_content"
+            android:text="เปิด folder" />
+
+    </LinearLayout>
 
 </LinearLayout>
