@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -19,10 +20,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -97,19 +97,15 @@ class MainActivity : AppCompatActivity() {
             val documentTo = txtDocumentTo.text.toString()
             val originalFrom = txtOriginalFrom.text.toString()
             val originalNumber = txtOriginalNumber.text.toString()
+            val originalName = txtOriginalName.text.toString()
+            val numberOfPages = txtNumberOfPages.text.toString()
 
-
-
-            val originalYear =txtOriginalDate.getYear()
-            val originalMonth =txtOriginalDate.getMonth() + 1
+            val originalYear = txtOriginalDate.getYear()
+            val originalMonth = txtOriginalDate.getMonth()
             val originalDate = txtOriginalDate.getDayOfMonth()
 
             val calendar = Calendar.getInstance()
             calendar.set(originalYear, originalMonth, originalDate)
-
-            val originalName = txtOriginalName.text.toString()
-            val numberOfPages = txtNumberOfPages.text.toString()
-
 
             val sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)
             with(sharedPref.edit()) {
@@ -159,62 +155,61 @@ class MainActivity : AppCompatActivity() {
                 val longThaiDateFormatter = SimpleDateFormat("d MMMM yyyy", Locale("th", "TH"))
                 val shortThaiDateFormatter = SimpleDateFormat("  /MMM/yy", Locale("th", "TH"))
 
-
                 val currentThaiLongDate = longThaiDateFormatter.format(Date())
                 val currentThaiShortDate = shortThaiDateFormatter.format(Date())
                 val thaiLongDate = longThaiDateFullFormatter.format(calendar.time)
 
-                Toast.makeText(this, originalDate.toString(), Toast.LENGTH_LONG).show()
-                // Load the docx template
                 val templateInputStream = resources.openRawResource(R.raw.index_case_template)
-                val document = XWPFDocument(templateInputStream)
 
-                // Replace placeholders with data from the TextView
-                val data = mapOf(
+                val replaceParams = mapOf(
                     "documentTo" to documentTo,
                     "originalFrom" to originalFrom,
                     "originalNumber" to originalNumber,
-                    "originalDate" to thaiLongDate,
                     "originalName" to originalName,
                     "numberOfPages" to numberOfPages,
+                    "originalDate" to thaiLongDate,
                     "dateLong" to currentThaiLongDate,
                     "dateShort" to currentThaiShortDate
                 )
-                Log.d("DATA", data.toString())
-                for (paragraph in document.paragraphs) {
-                    for (run in paragraph.runs) {
-                        var text = run.text()
-                        for ((key, value) in data) {
-                            text = text.replace("{{${key}}}", value)
+
+                val dateFormat = SimpleDateFormat("yyyy_MM_dd-HH_mm_ss", Locale.US)
+                val timestamp = dateFormat.format(Date())
+                val exportFilename = "$timestamp-$documentTo-export.docx"
+
+                val downloadFolder =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val outputFile = File(downloadFolder, exportFilename)
+
+                XWPFDocument(templateInputStream).use { doc ->
+                    for (para in doc.paragraphs) {
+                        val paraText = para.text
+                        if (replaceParams.keys.any { it in paraText }) {
+                            for (para in doc.paragraphs) {
+                                for (run in para.runs) {
+
+                                    var text = run.text()
+                                    Log.e("LINE", text)
+                                    for ((key, value) in replaceParams) {
+                                        text = text.replace(key, value)
+                                    }
+                                    run.setText(text, 0)
+                                }
+                            }
                         }
-                        run.setText(text, 0)
+                    }
+                    FileOutputStream(outputFile).use { outputStream ->
+                        doc.write(outputStream)
                     }
                 }
 
+                // Notify the user that the file has been saved
+                MediaScannerConnection.scanFile(this, arrayOf(outputFile.path), null, null)
+                Toast.makeText(
+                    this,
+                    "File saved to ${outputFile.absolutePath}",
+                    Toast.LENGTH_LONG
+                ).show()
 
-                // Save the filled template as a new docx file in the Downloads folder
-                val now = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
-                var index = 0
-                var outputFile: File
-                do {
-                    val filename = "${formatter.format(now)}_${index}_page.docx"
-                    outputFile = File(
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                        filename
-                    )
-                    index++
-                } while (outputFile.exists())
-
-                val fos = FileOutputStream(outputFile)
-                document.write(fos)
-                fos.close()
-
-                // Close the template document
-                document.close()
-
-
-                Toast.makeText(this, "Document created", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(this, "Text cannot be null", Toast.LENGTH_LONG).show()
             }
