@@ -11,7 +11,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.widget.Button
-import android.widget.EditText
+import android.widget.DatePicker
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -36,12 +36,10 @@ class MainActivity : AppCompatActivity() {
         var txtDocumentTo: TextView = findViewById(R.id.txtDocumentTo)
         var txtOriginalFrom: TextView = findViewById(R.id.txtOriginalFrom)
         var txtOriginalNumber: TextView = findViewById(R.id.txtOriginalNumber)
-        var txtOriginalDate: TextView = findViewById(R.id.txtOriginalDate)
         var txtOriginalName: TextView = findViewById(R.id.txtOriginalName)
         var txtNumberOfPages: TextView = findViewById(R.id.txtNumberOfPages)
 
         checkPermission()
-        val currentDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(Date())
 
         val btnGenerateIndexPage = findViewById<Button>(R.id.btnGenerateIndexPage)
         btnGenerateIndexPage.setOnClickListener {
@@ -52,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         txtDocumentTo.text = sharedPref.getString("txtDocumentTo", "")
         txtOriginalFrom.text = sharedPref.getString("txtOriginalFrom", "")
         txtOriginalNumber.text = sharedPref.getString("txtOriginalNumber", "")
-        txtOriginalDate.text = sharedPref.getString("txtOriginalDate", currentDate)
         txtOriginalName.text = sharedPref.getString("txtOriginalName", "")
         txtNumberOfPages.text = sharedPref.getString("txtNumberOfPages", "")
     }
@@ -93,14 +90,19 @@ class MainActivity : AppCompatActivity() {
             var txtDocumentTo: TextView = findViewById(R.id.txtDocumentTo)
             var txtOriginalFrom: TextView = findViewById(R.id.txtOriginalFrom)
             var txtOriginalNumber: TextView = findViewById(R.id.txtOriginalNumber)
-            var txtOriginalDate: TextView = findViewById(R.id.txtOriginalDate)
+            var txtOriginalDate: DatePicker = findViewById(R.id.txtOriginalDate)
             var txtOriginalName: TextView = findViewById(R.id.txtOriginalName)
             var txtNumberOfPages: TextView = findViewById(R.id.txtNumberOfPages)
 
             val documentTo = txtDocumentTo.text.toString()
             val originalFrom = txtOriginalFrom.text.toString()
             val originalNumber = txtOriginalNumber.text.toString()
-            val originalDate = txtOriginalDate.text.toString()
+            val originalDate = String.format(
+                "%04d/%02d/%02d",
+                txtOriginalDate.getYear(),
+                txtOriginalDate.getMonth() + 1,
+                txtOriginalDate.getDayOfMonth()
+            );
             val originalName = txtOriginalName.text.toString()
             val numberOfPages = txtNumberOfPages.text.toString()
 
@@ -155,7 +157,17 @@ class MainActivity : AppCompatActivity() {
                 isError = true // set isError to true to indicate that there is an error
             }
             if (!isError) {
+                val longThaiDateFullFormatter = SimpleDateFormat("d MMMM yyyy", Locale("th", "TH"))
+                val longThaiDateFormatter = SimpleDateFormat("d MMMM yyyy", Locale("th", "TH"))
+                val shortThaiDateFormatter = SimpleDateFormat("  /MMM/yy", Locale("th", "TH"))
 
+
+                val currentThaiLongDate = longThaiDateFormatter.format(Date())
+
+                val currentThaiShortDate = shortThaiDateFormatter.format(Date())
+//                val thaiLongDate = longThaiDateFullFormatter.format(originalDate)
+
+                Toast.makeText(this, originalDate.toString(), Toast.LENGTH_LONG).show()
                 // Load the docx template
                 val templateInputStream = resources.openRawResource(R.raw.index_case_template)
                 val document = XWPFDocument(templateInputStream)
@@ -163,12 +175,15 @@ class MainActivity : AppCompatActivity() {
                 // Replace placeholders with data from the TextView
                 val data = mapOf(
                     "document_to" to documentTo,
-                    "original_from" to originalFrom,
-                    "original_number" to originalNumber,
-                    "original_date" to originalDate,
-                    "original_name" to originalName,
+                    "document_from" to originalFrom,
+                    "document_number" to originalNumber,
+//                    "original_date" to thaiLongDate,
+                    "document_name" to originalName,
                     "number_of_result" to numberOfPages,
+                    "date_long" to currentThaiLongDate,
+                    "date_short" to currentThaiShortDate
                 )
+                Log.d("DATA", data.toString())
                 for (paragraph in document.paragraphs) {
                     for (run in paragraph.runs) {
                         var text = run.text()

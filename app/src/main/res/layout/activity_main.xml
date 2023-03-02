@@ -113,13 +113,12 @@
 
             android:text="ลงวันที่" />
 
-        <EditText
+        <DatePicker
             android:id="@+id/txtOriginalDate"
-            style="@style/EditText"
-            android:hint="yyyy/mm/dd"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="date" />
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner" />
 
     </LinearLayout>
 
