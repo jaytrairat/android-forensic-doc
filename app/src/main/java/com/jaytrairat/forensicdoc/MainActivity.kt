@@ -6,6 +6,8 @@ import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -24,12 +26,11 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
+import java.time.chrono.ThaiBuddhistChronology
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -107,7 +108,7 @@ class MainActivity : AppCompatActivity() {
             val originalName = txtOriginalName.text.toString()
             val numberOfPages = txtNumberOfPages.text.toString()
 
-            val originalYear = txtOriginalDate.getYear()
+            val originalYear = txtOriginalDate.getYear() + 543
             val originalMonth = txtOriginalDate.getMonth()
             val originalDate = txtOriginalDate.getDayOfMonth()
 
@@ -164,12 +165,23 @@ class MainActivity : AppCompatActivity() {
             }
             if (!isError) {
                 val longThaiDateFullFormatter = SimpleDateFormat("d MMMM yyyy", Locale("th", "TH"))
-                val longThaiDateFormatter = SimpleDateFormat("d MMMM yyyy", Locale("th", "TH"))
+                val longThaiDateFormatter = SimpleDateFormat(" MMMM yyyy", Locale("th", "TH"))
                 val shortThaiDateFormatter = SimpleDateFormat("  /MMM/yy", Locale("th", "TH"))
 
-                val currentThaiLongDate = longThaiDateFormatter.format(Date())
-                val currentThaiShortDate = shortThaiDateFormatter.format(Date())
+                val calendar = Calendar.getInstance()
+                calendar.time = Date()
+
+                val year = calendar.get(Calendar.YEAR)
+                val buddhistYear = year + 543
+
+                calendar.set(Calendar.YEAR, buddhistYear)
+                val currentDate = calendar.time
+
+
+                val currentThaiLongDate = longThaiDateFormatter.format(currentDate)
+                val currentThaiShortDate = shortThaiDateFormatter.format(currentDate)
                 val thaiLongDate = longThaiDateFullFormatter.format(calendar.time)
+
 
                 val templateInputStream = resources.openRawResource(R.raw.index_case_template)
 
