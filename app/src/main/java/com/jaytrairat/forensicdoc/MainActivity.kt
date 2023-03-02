@@ -108,11 +108,11 @@ class MainActivity : AppCompatActivity() {
             val sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)
             with(sharedPref.edit()) {
                 putString("txtDocumentTo", documentTo)
-                putString("txtOriginalFrom", documentTo)
-                putString("txtOriginalNumber", documentTo)
-                putString("txtOriginalDate", documentTo)
-                putString("txtOriginalName", documentTo)
-                putString("txtNumberOfPages", documentTo)
+                putString("txtOriginalFrom", originalFrom)
+                putString("txtOriginalNumber", originalNumber)
+                putString("txtOriginalDate", originalDate)
+                putString("txtOriginalName", originalName)
+                putString("txtNumberOfPages", numberOfPages)
                 apply()
             }
 
